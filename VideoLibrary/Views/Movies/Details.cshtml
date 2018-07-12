@@ -1,0 +1,42 @@
+﻿@model VideoLibrary.Entities.Movie
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Movie</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Genre.NameGenre)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Genre.NameGenre)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.NameMovie)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.NameMovie)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CreationDateMovie)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CreationDateMovie)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+    @Html.ActionLink("Voltar", "Index")
+</p>

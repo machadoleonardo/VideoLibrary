@@ -1,0 +1,48 @@
+﻿@model VideoLibrary.Entities.Movie
+
+@{
+    ViewBag.Title = "Delete";
+}
+
+<h2>Delete</h2>
+
+<h3>Deseja realmente excluir o Filme?</h3>
+<div>
+    <h4>Movie</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Genre.NameGenre)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Genre.NameGenre)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.NameMovie)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.NameMovie)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CreationDateMovie)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CreationDateMovie)
+        </dd>
+
+    </dl>
+
+    @using (Html.BeginForm()) {
+        @Html.AntiForgeryToken()
+
+        <div class="form-actions no-color">
+            <input type="submit" value="Delete" class="btn btn-default" /> |
+            @Html.ActionLink("Voltar", "Index")
+        </div>
+    }
+</div>

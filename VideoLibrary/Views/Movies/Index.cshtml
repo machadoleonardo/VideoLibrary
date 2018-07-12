@@ -1,0 +1,138 @@
+﻿@model IEnumerable<VideoLibrary.Entities.Movie>
+
+@{
+    ViewBag.Title = "Filmes";
+}
+
+<h2>Filmes</h2>
+
+<p>
+    @Html.ActionLink("Cadastrar Novo Filme", "Create")
+</p>
+<table class="table" id="tableMovies">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Genre.NameGenre)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.NameMovie)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CreationDateMovie)
+            </th>
+            <th></th>
+            <th>@Html.DisplayNameFor(model => model.IsRemove)</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Genre.NameGenre)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.NameMovie)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CreationDateMovie)
+                </td>
+                <td>
+                    @Html.ActionLink("Editar", "Edit", new { id = item.Id }) |
+                    @Html.ActionLink("Detalhes", "Details", new { id = item.Id })  |
+                </td>
+                <td id="@item.Id" onchange="SetRemove(this.id)">
+                    @Html.CheckBoxFor(modelItem => item.IsRemove, new { @Id = item.Id })
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<button id="btnRemoveSelectedMovies" class="btn btn-primary">Remover Filmes Selecionados</button>
+
+<div id="modalAlertBootBox" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- dialog body -->
+            <div class="modal-body">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <!-- dialog buttons -->
+            <div class="modal-footer"><button type="button" id="btnOkModalBootBox" class="btn btn-primary">OK</button></div>
+        </div>
+    </div>
+</div>
+
+<script src="~/Scripts/jquery-3.3.1.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css" />
+<script type="text/javascript" src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+
+
+<script type="text/javascript" src="~/Scripts/bootstrap.js"></script>
+<script href="~/Scripts/bootstrap.min.js"></script>
+<script src="~/Scripts/bootbox.min.js"></script>
+
+<script type="text/javascript">
+
+    var listMoviesIsRemover = [];
+
+    $(document).ready(function () {
+        $.noConflict();
+        var divTable = $('#tableMovies');
+        divTable.DataTable();
+    });
+
+    function SetRemove(id) {
+        var index = listMoviesIsRemover.indexOf(id);
+        if (index > -1) {
+            listMoviesIsRemover.splice(index, 1);
+        } else {
+            listMoviesIsRemover.push(id);
+        }
+    }
+
+    $('#btnRemoveSelectedMovies').click(function () {
+        
+        var data = {
+            listIdsForDelete: listMoviesIsRemover
+        };
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("LogicalRemovalMoviesByIds", "Movies")',
+            content: "application/json; charset=utf-8",
+            dataType: "json",
+            data: data,
+            success: function (response) {
+                if (response.Success) {
+                    location.reload();
+                } else {
+                    bootbox.alert(response.Text);
+                }
+            }
+
+        });
+
+    });
+
+    $("#modalAlertBootBox").on("show", function () {    // wire up the OK button to dismiss the modal when shown
+        $("#modalAlertBootBox a.btn").on("click", function (e) {
+            $("#modalAlertBootBox").modal('hide');     // dismiss the dialog
+        });
+    });
+    $("#modalAlertBootBox").on("hide", function () {    // remove the event listeners when the dialog is dismissed
+        $("#modalAlertBootBox a.btn").off("click");
+    });
+
+    $("#modalAlertBootBox").on("hidden", function () {  // remove the actual elements from the DOM when fully hidden
+        $("#modalAlertBootBox").remove();
+    });
+
+    $("#modalAlertBootBox").modal({                    // wire up the actual modal functionality and show the dialog
+        "options.backdrop ": "static",
+        "keyboard": true,
+        "show": false                     // ensure the modal is shown immediately
+    });
+
+</script>

@@ -1,0 +1,111 @@
+﻿@model VideoLibrary.Entities.Genre
+@{
+    ViewBag.Title = "Criar Gênero";
+}
+<h2>Cadastrar Gênero</h2>
+
+    <div class="form-horizontal">
+        <h4>Gênero</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            @Html.LabelFor(model => model.NameGenre, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.NameGenre, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.NameGenre, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.CreationDateGenre, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.CreationDateGenre, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.CreationDateGenre, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <button id="btnAddGenre" class="btn btn-primary">Cadastrar Gênero</button>
+            </div>
+        </div>
+    </div>
+
+<div>
+    @Html.ActionLink("Voltar", "Index")
+</div>
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+
+<div id="modalAlertBootBox" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- dialog body -->
+            <div class="modal-body">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <!-- dialog buttons -->
+            <div class="modal-footer"><button type="button" id="btnOkModalBootBox" class="btn btn-primary">OK</button></div>
+        </div>
+    </div>
+</div>
+<script src="~/Scripts/jquery-3.3.1.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css" />
+<script type="text/javascript" src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+
+<script type="text/javascript" src="~/Scripts/bootstrap.js"></script>
+<script href="~/Scripts/bootstrap.min.js"></script>
+<script src="~/Scripts/bootbox.min.js"></script>
+<script type="text/javascript">
+
+    $('#btnAddGenre').click(function () {
+        var nameGenre = $('#NameGenre').val();
+        var CreationDateGenre = $('#CreationDateGenre').val();
+        var Active = true;
+        var genre = {
+            nameGenre,
+            CreationDateGenre,
+            Active,
+        }
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("Create", "Genres")',
+            content: "application/json; charset=utf-8",
+            dataType: "json",
+            data: genre,
+            success: function (response) {
+                
+                if (response.Success) {
+                    
+                    window.location.href = '/Genres/Index/';
+                } else {
+                    bootbox.alert(response.Text);
+                }
+            }
+
+        });
+
+    });
+
+    $("#modalAlertBootBox").on("show", function () {    // wire up the OK button to dismiss the modal when shown
+        $("#modalAlertBootBox a.btn").on("click", function (e) {
+              
+            $("#modalAlertBootBox").modal('hide');     // dismiss the dialog
+        });
+    });
+    $("#modalAlertBootBox").on("hide", function () {    // remove the event listeners when the dialog is dismissed
+        
+        $("#modalAlertBootBox a.btn").off("click");
+    });
+
+    $("#modalAlertBootBox").on("hidden", function () {  // remove the actual elements from the DOM when fully hidden
+        
+        $("#modalAlertBootBox").remove();
+    });
+
+    $("#modalAlertBootBox").modal({                    // wire up the actual modal functionality and show the dialog
+        "options.backdrop ": "static",
+        "keyboard": true,
+        "show": false                     // ensure the modal is shown immediately
+    });
+
+</script>

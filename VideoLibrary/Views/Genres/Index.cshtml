@@ -1,0 +1,119 @@
+﻿@model IEnumerable<VideoLibrary.Entities.Genre>
+@{
+    ViewBag.Title = "Gêneros";
+}
+<h2>Gêneros</h2>
+<p>
+    @Html.ActionLink("Cadastrar novo Gênero", "Create")
+</p>
+<table class="table" id="tableGenres">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.NameGenre)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CreationDateGenre)
+            </th>
+            <th></th>
+            <th>@Html.DisplayNameFor(model => model.IsRemove)</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.NameGenre)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CreationDateGenre)
+                </td>
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
+                    @Html.ActionLink("Details", "Details", new { id = item.Id })
+                </td>
+                <td id="@item.Id" onchange="SetRemove(this.id)">
+                    @Html.CheckBoxFor(modelItem => item.IsRemove, new { @Id = item.Id })
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<button id="btnRemoveSelectedGenres" class="btn btn-primary">Remover Gêneros Selecionados</button>
+
+
+<script src="~/Scripts/jquery-3.3.1.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css" />
+<script type="text/javascript" src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+
+<script type="text/javascript" src="~/Scripts/bootstrap.js"></script>
+<script href="~/Scripts/bootstrap.min.js"></script>
+<script src="~/Scripts/bootbox.min.js"></script>
+<script type="text/javascript">
+
+    var listGenresIsRemover = [];
+
+    $(document).ready(function () {
+        $.noConflict();
+        var divTable = $('#tableGenres');
+        divTable.DataTable();
+    });
+
+    function SetRemove(id) {
+        var index = listGenresIsRemover.indexOf(id);
+        if (index > -1) {
+            listGenresIsRemover.splice(index, 1);
+        } else {
+            listGenresIsRemover.push(id);
+        }
+    }
+
+    $('#btnRemoveSelectedGenres').click(function () {
+        
+        var data = {
+            listIdsForDelete: listGenresIsRemover
+        };
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("LogicalRemovalGenresByIds", "Genres")',
+            content: "application/json; charset=utf-8",
+            dataType: "json",
+            data: data,
+            success: function (response) {
+                debugger
+                if (response.Success) {
+                    location.reload();
+                } else {
+                    bootbox.alert(response.Text);
+                }
+            }
+
+        });
+
+    });
+
+    $("#modalAlertBootBox").on("show", function () {    // wire up the OK button to dismiss the modal when shown
+        $("#modalAlertBootBox a.btn").on("click", function (e) {
+              
+            $("#modalAlertBootBox").modal('hide');     // dismiss the dialog
+        });
+    });
+    $("#modalAlertBootBox").on("hide", function () {    // remove the event listeners when the dialog is dismissed
+        
+        $("#modalAlertBootBox a.btn").off("click");
+    });
+
+    $("#modalAlertBootBox").on("hidden", function () {  // remove the actual elements from the DOM when fully hidden
+        
+        $("#modalAlertBootBox").remove();
+    });
+
+    $("#modalAlertBootBox").modal({                    // wire up the actual modal functionality and show the dialog
+        "options.backdrop ": "static",
+        "keyboard": true,
+        "show": false                     // ensure the modal is shown immediately
+    });
+
+</script>
